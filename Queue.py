@@ -1,5 +1,6 @@
 import datetime
 import Person
+from Priority import Priority
 from termcolor import colored
 from tabulate import tabulate
 
@@ -7,18 +8,25 @@ from tabulate import tabulate
 class Queue:
     def __init__(self):
         self.items = []
+        self.priorityItems = []
         self.nextAvailableTurn = 1
         self.open = True
 
     def __len__(self):
-        return len(self.items)
+        return len(self.items + self.priorityItems)
 
     def add(self, item):
         item.turn = self.nextAvailableTurn
         item.arrivedAt = datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-        self.items = [*self.items, item]
+
+        if(item.priority == Priority.HIGH.value):
+            self.priorityItems = [*self.priorityItems, item]
+        else:
+            self.items = [*self.items, item]
+
         self.nextAvailableTurn += 1
-        return len(self.items)
+
+        return len(self.items) + len(self.priorityItems)
 
     def addCsv(self, filePath):
         length = 0
@@ -43,10 +51,16 @@ class Queue:
                 peoplecsv.close()
 
     def next(self):
-        if len(self.items) == 0:
+        if len(self.items) == 0 and len(self.priorityItems) == 0:
             print(colored("No hay elementos en cola.", "yellow"))
         else:
-            head = self.items[0]
+            if(len(self.priorityItems) != 0):
+                head = self.priorityItems[0]
+                self.priorityItems = self.priorityItems[1:]
+            else:
+                head = self.items[0]
+                self.items = self.items[1:]
+
             print("⏭ ", colored(f'Siguiente en fila', "cyan"))
             tableHeaders = ["Turno #", "Nombre",
                             "Cédula", "Teléfono", "Fecha de regístro"]
@@ -54,27 +68,42 @@ class Queue:
                           head.phoneNumber, head.arrivedAt]]
             print(tabulate(tableData, tableHeaders, tablefmt="grid"))
             print("\n")
-            self.items = self.items[1:]
 
     def show(self):
-        if len(self.items) == 0:
+        if len(self.items) == 0 and len(self.priorityItems) == 0:
             print(colored("No hay elementos en cola.", "yellow"))
         else:
+            if(len(self.priorityItems) != 0):
+                print("=" * 50)
+                print('📢📢 ', colored(
+                    f'{len(self.priorityItems)} en cola de alta prioridad.', "cyan"))
+                tableData = []
+                tableHeaders = ["Prioridad", "Turno #", "Nombre",
+                                "Cédula", "Teléfono", "Fecha de regístro"]
+                for item in self.priorityItems:
+                    tableData.append(
+                        [Priority(item.priority).name, item.turn, item.name, item.idNumber, item.phoneNumber, item.arrivedAt])
+                print(tabulate(tableData, tableHeaders, tablefmt="grid"))
+                print("\n")
+
             print("=" * 50)
-            print('📢📢 ', colored(f'{len(self.items)} en cola.', "cyan"))
+            print('📢📢 ', colored(
+                f'{len(self.items)} en cola de baja prioridad.', "cyan"))
             tableData = []
-            tableHeaders = ["Turno #", "Nombre",
+            tableHeaders = ["Prioridad", "Turno #", "Nombre",
                             "Cédula", "Teléfono", "Fecha de regístro"]
             for item in self.items:
                 tableData.append(
-                    [item.turn, item.name, item.idNumber, item.phoneNumber, item.arrivedAt])
+                    [Priority(item.priority).name, item.turn, item.name, item.idNumber, item.phoneNumber, item.arrivedAt])
 
             print(tabulate(tableData, tableHeaders, tablefmt="grid"))
             print("\n")
 
     def empty(self):
         self.items = []
+        self.priorityItems = []
 
     def reset(self):
         self.items = []
+        self.priorityItems = []
         self.nextAvailableTurn = 1

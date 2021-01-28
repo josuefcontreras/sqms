@@ -47,8 +47,12 @@ def collectInfo():
         r"\(?(809|829|849)\)?[-\s]?\d{3}[-\s]?\d{4}$", "Teléfono", "Por favor, introduzca un numero telefonico de 10 digitos que empiece con 809, 829 u 849"))
     if phoneNumber == "0":
         return "mp"
+    priority = validateInput(
+        r"1|2", "Prioridad", "Por favor, introduzca un numero de prioridad: 1 (Alta) 2")
+    if priority == "0":
+        return "mp"
 
-    return {"name": name, "idNumber": idNumber, "phoneNumber": phoneNumber}
+    return {"name": name, "idNumber": idNumber, "phoneNumber": phoneNumber, "priority": priority}
 
 
 def confirmInput(action):
@@ -71,6 +75,7 @@ def iniciar():
     queue = Queue.Queue()
 
     showMenu()
+
     while queue.open:
         choice = input(">>> ").lower()
 
