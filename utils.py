@@ -48,7 +48,7 @@ def collectInfo():
     if phoneNumber == "0":
         return "mp"
     priority = validateInput(
-        r"1|2", "Prioridad", "Por favor, introduzca un numero de prioridad: 1 (Alta) 2")
+        r"1|2", "Prioridad - Introduzca el 1 (alta) o el 2 (baja)", "Por favor, introduzca un numero de prioridad: 1 (alta) o 2 (baja)")
     if priority == "0":
         return "mp"
 
