@@ -36,9 +36,10 @@ class Queue:
                 if index == 0:
                     continue
                 else:
-                    [name, idNumber, phoneNumber] = line.replace(
-                        "\"", "").split(",")
-                    self.add(Person.Person(name, idNumber, phoneNumber))
+                    [priority, name, idNumber, phoneNumber] = line.replace(
+                        "\"", "").strip().split(",")
+                    self.add(Person.Person(
+                        name, idNumber, phoneNumber, priority))
                     length += 1
             print(colored(
                 f'✔✔ {length} nuevos elementos agregados. \n Total en queue: {len(self)}.', "green"))
