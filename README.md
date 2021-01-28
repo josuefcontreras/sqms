@@ -8,5 +8,5 @@ After cloning the repo, cd into the sqms folder and execute the commands below t
 
 ```
 pip install -r requirements.txt
-python inicial.py
+python iniciar.py
 ```
